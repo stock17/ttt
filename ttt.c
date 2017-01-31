@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <math.h>
 
 #define GRIDSIZE 200
 #define RES_X 1024
 #define RES_Y 768
 
 void DrawGrid (SDL_Renderer* r, int x, int y, int size);
+void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 
 
 int main (void)
 {
     SDL_Window *win;
     SDL_Renderer *rend;
+    SDL_Event e;
     
     SDL_Init (SDL_INIT_VIDEO);
     win = SDL_CreateWindow("Tic-tac-toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RES_X, RES_Y, 0);
@@ -22,12 +25,15 @@ int main (void)
         
     // Draw grid 
     DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
+    
+    // Draw circle = testing
+    DrawCircle(rend, 512, 384, 50); 
+
     SDL_RenderPresent(rend);
         
     while(1)
     {
-        SDL_Event e;
-        
+       
         if (SDL_PollEvent(&e))
         {
             if (e.type == SDL_QUIT)
@@ -54,4 +60,12 @@ void DrawGrid (SDL_Renderer* r, int x, int y, int size)
         SDL_RenderDrawLine(r, x, y+i, x+3*size, y+i);
         SDL_RenderDrawLine(r, x+i, y, x+i, y+3*size);           
     }
+}
+
+void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius)
+{
+    for (float rad = 0; rad < 6.2; rad += 0.01)
+    {      
+        SDL_RenderDrawPoint(r, cx + cos(rad) * radius ,cy + sin(rad) * radius);    
+    }   
 }
