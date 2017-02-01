@@ -52,7 +52,13 @@ int main (void)
             //break;
             int mx, my;
             int mouse = SDL_GetMouseState(&mx, &my);
-            DrawCross(rend, mx, my, 30);
+            
+            //if (SDL_BUTTON(SDL_BUTTON_RIGHT))
+            if (e.button.button == SDL_BUTTON_LEFT)
+                DrawCross(rend, mx, my, 30);
+            else
+                DrawCircle(rend, mx, my, 30);
+
             SDL_RenderPresent(rend);
         }
         
