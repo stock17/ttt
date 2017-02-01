@@ -2,12 +2,13 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 
-#define GRIDSIZE 200
-#define RES_X 1024
-#define RES_Y 768
+#define GRIDSIZE 100
+#define RES_X 640
+#define RES_Y 480
 
 void DrawGrid (SDL_Renderer* r, int x, int y, int size);
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
+void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 
 
 int main (void)
@@ -26,9 +27,11 @@ int main (void)
     // Draw grid 
     DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
     
-    // Draw circle = testing
-    DrawCircle(rend, 512, 384, 50); 
+    // Draw = testing
+    DrawCircle(rend, 320, 240, 30); 
+    DrawCross(rend, 220, 240, 30);
 
+    
     SDL_RenderPresent(rend);
         
     while(1)
@@ -62,10 +65,20 @@ void DrawGrid (SDL_Renderer* r, int x, int y, int size)
     }
 }
 
+// Function to draw circle
+// Args: renderer, center coords, radius
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius)
 {
-    for (float rad = 0; rad < 6.2; rad += 0.01)
+    for (float rad = 0; rad < 6.2; rad += 0.02)
     {      
         SDL_RenderDrawPoint(r, cx + cos(rad) * radius ,cy + sin(rad) * radius);    
     }   
+}
+
+// Function to draw cross
+// Args: renderer, center coords, size of square side
+void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
+{
+      SDL_RenderDrawLine(r, cx-size, cy-size,cx+size,cy+size);
+      SDL_RenderDrawLine(r, cx-size, cy+size,cx+size,cy-size);
 }
