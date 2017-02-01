@@ -27,13 +27,15 @@ int main (void)
     // Draw grid 
     DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
     
-    // Draw = testing
+    // Draw = testing //*************
     DrawCircle(rend, 320, 240, 30); 
     DrawCross(rend, 220, 240, 30);
-
-    
     SDL_RenderPresent(rend);
-        
+    
+    DrawCross(rend, 420, 240, 30);
+    SDL_RenderPresent(rend);
+    //*******************************
+            
     while(1)
     {
        
@@ -41,6 +43,17 @@ int main (void)
         {
             if (e.type == SDL_QUIT)
                 break;
+        }
+        
+        //Catch the mouse
+        if (e.type == SDL_MOUSEBUTTONDOWN)
+        {
+            //printf("Catch!");
+            //break;
+            int mx, my;
+            int mouse = SDL_GetMouseState(&mx, &my);
+            DrawCross(rend, mx, my, 30);
+            SDL_RenderPresent(rend);
         }
         
     }
@@ -54,7 +67,6 @@ int main (void)
 
 // Function to draw the game grid
 // Args: render, coorinates of left up corner, size of cell side
-
 void DrawGrid (SDL_Renderer* r, int x, int y, int size)
 {
     //for (int i = 0; i < 4 * size; i += size) // with border
@@ -71,14 +83,14 @@ void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius)
 {
     for (float rad = 0; rad < 6.2; rad += 0.02)
     {      
-        SDL_RenderDrawPoint(r, cx + cos(rad) * radius ,cy + sin(rad) * radius);    
+        SDL_RenderDrawPoint(r, cx+cos(rad)*radius, cy+sin(rad)*radius);    
     }   
 }
 
 // Function to draw cross
-// Args: renderer, center coords, size of square side
+// Args: renderer, center coords, size of square side / 2
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
 {
-      SDL_RenderDrawLine(r, cx-size, cy-size,cx+size,cy+size);
-      SDL_RenderDrawLine(r, cx-size, cy+size,cx+size,cy-size);
+      SDL_RenderDrawLine(r, cx-size, cy-size, cx+size, cy+size);
+      SDL_RenderDrawLine(r, cx-size, cy+size, cx+size, cy-size);
 }
