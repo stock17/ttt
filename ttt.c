@@ -6,9 +6,6 @@
 #define RES_X 640
 #define RES_Y 480
 
-void DrawGrid (SDL_Renderer* r, int x, int y, int size);
-void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
-void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 
 struct Grid {
     SDL_Point center;
@@ -16,6 +13,13 @@ struct Grid {
     int cellsign[3][3];
     SDL_Point cellcenter[3][3];
 };
+
+// void DrawGrid (SDL_Renderer* r, int x, int y, int size);  // V.1
+void DrawGrid (SDL_Renderer* r, struct Grid g);              // V.2
+void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
+void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
+
+
 
 int main (void)
 {
@@ -32,7 +36,7 @@ int main (void)
     
     //=================== Init grid =====================
     struct Grid mygrid;
-    //mygrid.center = {(RES_X / 2), (RES_Y / 2)};
+
     mygrid.center.x = RES_X / 2;
     mygrid.center.y = RES_Y / 2;
     mygrid.cellsize = GRIDSIZE;
@@ -58,7 +62,11 @@ int main (void)
     
 
     // Draw grid 
-    DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
+    //DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
+    //V.2
+    DrawGrid (rend, mygrid);
+    
+    
     
     // Draw = testing //*************
     DrawCircle(rend, 320, 240, 30); 
@@ -102,8 +110,8 @@ int main (void)
     
 }
 
-// Function to draw the game grid
-// Args: render, coorinates of left up corner, size of cell side
+/* Function to draw the game grid
+Args: render, coorinates of left up corner, size of cell side
 void DrawGrid (SDL_Renderer* r, int x, int y, int size)
 {
     //for (int i = 0; i < 4 * size; i += size) // with border
@@ -112,7 +120,29 @@ void DrawGrid (SDL_Renderer* r, int x, int y, int size)
         SDL_RenderDrawLine(r, x, y+i, x+3*size, y+i);
         SDL_RenderDrawLine(r, x+i, y, x+i, y+3*size);           
     }
+}*/
+
+
+// Function to draw the game grid V.2
+// Args: render, grid
+void DrawGrid (SDL_Renderer* r, struct Grid g)
+{
+    int x = g.center.x - g.cellsize * 1.5;
+    int y = g.center.y - g.cellsize * 1.5;
+    int step = g.cellsize;
+   
+    //DEBUG:
+    printf("%i\n",g.center.x);printf("%i\n",g.center.y);
+    printf("%i\n",x);printf("%i\n",y);
+    
+    for (int i = 0; i < 4 * step; i += step) // with border
+    //for (int i = step; i < 3 * step; i += step) // without border
+    {
+        SDL_RenderDrawLine(r, x, y+i, x+3*step, y+i);
+        SDL_RenderDrawLine(r, x+i, y, x+i, y+3*step);           
+    }
 }
+
 
 // Function to draw circle
 // Args: renderer, center coords, radius
