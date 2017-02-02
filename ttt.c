@@ -98,16 +98,36 @@ int main (void)
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
             int mx, my;
-            int mousestate = SDL_GetMouseState(&mx, &my);
-            
-            //if (SDL_BUTTON(SDL_BUTTON_RIGHT))
-            if (e.button.button == SDL_BUTTON_LEFT)
-                DrawCross(rend, mx, my, 30);
-            else
-                DrawCircle(rend, mx, my, 30);
+            SDL_GetMouseState(&mx, &my);
+           
+         // Check if mouse coordinates in any cell 
+                       
+             for (int i = 0; i < 3; i++)
+             {
+                 for (int j = 0; j < 3; j++)
+                 {    
+                     if 
+                     (
+                         (mx > mygrid.cellcenter[i][j].x - mygrid.cellsize/2 && my > mygrid.cellcenter[i][j].y- mygrid.cellsize/2) &&
+                         (mx < mygrid.cellcenter[i][j].x + mygrid.cellsize/2 && my < mygrid.cellcenter[i][j].y + mygrid.cellsize/2)
+                     )
+                     {
+                         if (e.button.button == SDL_BUTTON_LEFT)
+                             mygrid.cellsign[i][j] = 1;
+                         else
+                             mygrid.cellsign[i][j] = 2;
+                     }  
+              
+                        
+                          
+                 }
+              }
 
+            SDL_RenderClear(rend);
+            DrawGrid(rend, mygrid);
             SDL_RenderPresent(rend);
-        }
+            
+         }
         
     }
     
