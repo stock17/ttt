@@ -40,8 +40,8 @@ int main (void)
     mygrid.center.x = RES_X / 2;
     mygrid.center.y = RES_Y / 2;
     mygrid.cellsize = GRIDSIZE;
-    int init_x = mygrid.center.x - mygrid.cellsize / 2;
-    int init_y = mygrid.center.y - mygrid.cellsize / 2;
+    int init_x = mygrid.center.x - mygrid.cellsize;
+    int init_y = mygrid.center.y - mygrid.cellsize;
     
     for (int i = 0; i < 3; i++)
     {
@@ -55,7 +55,7 @@ int main (void)
             mygrid.cellcenter[i][j].y = init_y;
             init_x += mygrid.cellsize;            
         }
-        init_x = mygrid.center.x - mygrid.cellsize / 2;
+        init_x = mygrid.center.x - mygrid.cellsize;
         init_y += mygrid.cellsize;
     }
     //===================================================
@@ -64,18 +64,26 @@ int main (void)
     // Draw grid 
     //DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
     //V.2
+
+        // Testing...
+    mygrid.cellsign[0][0] = 1;    
+        mygrid.cellsign[1][1] = 2;
+            mygrid.cellsign[2][2] = 1;
+    
+    
     DrawGrid (rend, mygrid);
+    SDL_RenderPresent(rend);
     
     
     
-    // Draw = testing //*************
+    /* Draw = testing 
     DrawCircle(rend, 320, 240, 30); 
     DrawCross(rend, 220, 240, 30);
     SDL_RenderPresent(rend);
     
     DrawCross(rend, 420, 240, 30);
     SDL_RenderPresent(rend);
-    //*******************************
+    ********************************/
             
     while(1)
     {
@@ -131,16 +139,30 @@ void DrawGrid (SDL_Renderer* r, struct Grid g)
     int y = g.center.y - g.cellsize * 1.5;
     int step = g.cellsize;
    
-    //DEBUG:
-    printf("%i\n",g.center.x);printf("%i\n",g.center.y);
-    printf("%i\n",x);printf("%i\n",y);
-    
     for (int i = 0; i < 4 * step; i += step) // with border
     //for (int i = step; i < 3 * step; i += step) // without border
     {
         SDL_RenderDrawLine(r, x, y+i, x+3*step, y+i);
         SDL_RenderDrawLine(r, x+i, y, x+i, y+3*step);           
     }
+    
+    
+    //Draw signs
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {    
+            if (g.cellsign[i][j] == 1)
+                DrawCross(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
+            else if (g.cellsign[i][j] == 2)
+                DrawCircle(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
+           
+           
+            SDL_RenderDrawPoint(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y);
+        }
+
+    }
+    
 }
 
 
@@ -158,6 +180,7 @@ void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius)
 // Args: renderer, center coords, size of square side / 2
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
 {
+
       SDL_RenderDrawLine(r, cx-size, cy-size, cx+size, cy+size);
       SDL_RenderDrawLine(r, cx-size, cy+size, cx+size, cy-size);
 }
