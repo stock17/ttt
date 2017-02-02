@@ -10,6 +10,12 @@ void DrawGrid (SDL_Renderer* r, int x, int y, int size);
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 
+struct Grid {
+    SDL_Point center;
+    int cellsize;
+    int cellsign[3][3];
+    SDL_Point cellcenter[3][3];
+};
 
 int main (void)
 {
@@ -23,7 +29,34 @@ int main (void)
     
     SDL_RenderClear(rend);
     SDL_RenderPresent(rend);
-        
+    
+    //=================== Init grid =====================
+    struct Grid mygrid;
+    //mygrid.center = {(RES_X / 2), (RES_Y / 2)};
+    mygrid.center.x = RES_X / 2;
+    mygrid.center.y = RES_Y / 2;
+    mygrid.cellsize = GRIDSIZE;
+    int init_x = mygrid.center.x - mygrid.cellsize / 2;
+    int init_y = mygrid.center.y - mygrid.cellsize / 2;
+    
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {    
+            // Move sings of cells to 0; cross - 1, zero - 2
+            mygrid.cellsign[i][j] = 0; 
+
+            // Set center coordinates of cells
+            mygrid.cellcenter[i][j].x = init_x;
+            mygrid.cellcenter[i][j].y = init_y;
+            init_x += mygrid.cellsize;            
+        }
+        init_x = mygrid.center.x - mygrid.cellsize / 2;
+        init_y += mygrid.cellsize;
+    }
+    //===================================================
+    
+
     // Draw grid 
     DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
     
@@ -48,10 +81,8 @@ int main (void)
         //Catch the mouse
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
-            //printf("Catch!");
-            //break;
             int mx, my;
-            int mouse = SDL_GetMouseState(&mx, &my);
+            int mousestate = SDL_GetMouseState(&mx, &my);
             
             //if (SDL_BUTTON(SDL_BUTTON_RIGHT))
             if (e.button.button == SDL_BUTTON_LEFT)
