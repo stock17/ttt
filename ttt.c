@@ -21,6 +21,7 @@ void GRID_Draw (SDL_Renderer* r, struct Grid g);              // V.2
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 int  GRID_CheckWin(struct Grid g, int winner);
+int GRID_CheckNoMove(struct Grid g);
 
 
 
@@ -82,6 +83,10 @@ int main (void)
             printf("Zero win\n");
             break;
         }
+        if (GRID_CheckNoMove (mygrid)) {
+            printf("Draw!\n");
+            break;
+        }
 
     // ----------- Check quit ----------------        
 
@@ -134,14 +139,15 @@ int main (void)
                         if 
                          (
                              (mx > mygrid.cellcenter[i][j].x - mygrid.cellsize/2 && my > mygrid.cellcenter[i][j].y - mygrid.cellsize/2) &&
-                             (mx < mygrid.cellcenter[i][j].x + mygrid.cellsize/2 && my < mygrid.cellcenter[i][j].y + mygrid.cellsize/2)
+                             (mx < mygrid.cellcenter[i][j].x + mygrid.cellsize/2 && my < mygrid.cellcenter[i][j].y + mygrid.cellsize/2) &&
+                             (mygrid.cellsign[i][j] == 0)
                          )
                          // then set sign
                          {
-                             if (e.button.button == SDL_BUTTON_LEFT)
-                                mygrid.cellsign[i][j] = 1;
-                            //else
-                          //    mygrid.cellsign[i][j] = 2;
+                            // if (e.button.button == SDL_BUTTON_LEFT)
+                               mygrid.cellsign[i][j] = 1;
+                            // else
+                            // mygrid.cellsign[i][j] = 2;
                          
                         // Reload grid
                             SDL_RenderClear(rend);
@@ -275,9 +281,24 @@ int GRID_CheckWin(struct Grid g, int winner)
 //=============== end GRID_CheckWin ==================
 
 
+// Function checks moves
+int GRID_CheckNoMove(struct Grid g)
+{
+    int n = 0;
+    
+    //Check lines
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (g.cellsign[i][j] != 0)  n++;
+        }
+        
+        if (n == 9) return 1;
+    }
 
-
-
+    return 0;
+}
 
 
 
