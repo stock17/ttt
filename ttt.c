@@ -22,6 +22,7 @@ void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 int  GRID_CheckWin(struct Grid g, int winner);
 int GRID_CheckNoMove(struct Grid g);
+int CompMove (struct Grid * g_ptr);
 
 
 
@@ -88,29 +89,27 @@ int main (void)
             break;
         }
 
-    // ----------- Check quit ----------------        
-
-        if (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT)
-                break;
-        }
+   
         
     // ----------- Computer move --------------
    
         if (!player_move)
         {
-            int n, i, j;
-        //Random for testing...
-            do {
-                srand(time(NULL));
-                n = rand()%9;
-                j = n % 3;
-                i = n / 3;
-                
-            } while (mygrid.cellsign[i][j] != 0);
+            if (CompMove(&mygrid)) {}
+            else {
             
-            mygrid.cellsign [i][j] = 2;
+                int n, i, j;
+        //<<<<<<<<<-------Random for testing...------->>>>>>>>
+                do {
+                    srand(time(NULL));
+                    n = rand()%9;
+                    j = n % 3;
+                    i = n / 3;
+                
+                } while (mygrid.cellsign[i][j] != 0);
+            
+                mygrid.cellsign [i][j] = 2;
+            }
             
             SDL_RenderClear(rend);
             GRID_Draw(rend, mygrid);
@@ -122,7 +121,20 @@ int main (void)
         
     // ------------ Player move ---------------
         else 
+        
+        
+        
+        
         {
+        
+         // ----------- Check quit ----------------        
+
+        if (SDL_PollEvent(&e))
+        {
+            if (e.type == SDL_QUIT)
+                break;
+        }
+        // ---------------------------------------
             SDL_WaitEvent(&e);
 
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -301,7 +313,92 @@ int GRID_CheckNoMove(struct Grid g)
 }
 
 
+//=================================================
+//========== Artifical Intelligence ===============
+//=================================================
 
+int CompMove (struct Grid * g_ptr) {
+
+// 1. Check lines, columns and diagonal for 2 same signs
+
+// 1.1. Check lines
+
+    int n = 0;
+    int foe = 1;
+    int ally = 2;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (g_ptr->cellsign[i][j] == foe)  n++;
+        }
+        
+        if (n == 2) {
+            for (int k = 0; k < 3; k++) {
+                if (g_ptr->cellsign[i][k] == 0)
+                {
+                    g_ptr->cellsign[i][k] = ally;
+                    return 1;
+                }
+            }
+        }
+        else n = 0;
+    }
+
+//Check columns
+       
+    for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            if (g_ptr->cellsign[i][j] == foe)  n++;
+        }
+        
+        if (n == 2) {
+            for (int k = 0; k < 3; k++) {
+                if (g_ptr->cellsign[k][j] == 0) {
+                    g_ptr->cellsign[k][j] = ally;
+                    return 1;
+                }
+                
+            }
+        }
+        else n = 0;
+    }
+    
+    //Check 1st diagonal
+       
+    if (g_ptr->cellsign[0][0] == foe) n++;
+    if (g_ptr->cellsign[1][1] == foe) n++;
+    if (g_ptr->cellsign[2][2] == foe) n++;
+    
+    if (n == 2)  {
+        for (int k = 0; k < 3; k++) {
+            if (g_ptr->cellsign[k][k] == 0) {
+                g_ptr->cellsign[k][k] = ally;
+                return 1;
+            }
+            
+        }
+    }
+    else n = 0;
+
+    
+    //Check 2st diagonal
+    
+    if (g_ptr->cellsign[0][2] == foe) n++;
+    if (g_ptr->cellsign[1][1] == foe) n++;
+    if (g_ptr->cellsign[2][0] == foe) n++;
+    
+    if (n == 2) {
+        for (int k = 0; k < 3; k++) {
+            if (g_ptr->cellsign[k][2-k] == 0) {
+                g_ptr->cellsign[2-k][k] = ally;
+                return 1;
+            }
+        }
+    }
+    else n = 0;
+
+    return 0;
+}    
 
 
 
