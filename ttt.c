@@ -325,35 +325,46 @@ int CompMove (struct Grid * g_ptr) {
 
 // 1.1. Check lines
 
-    int n = 0;
+    int n_foe = 0;
+    int n_ally = 0;
     int foe = 1;
     int ally = 2;
     
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (g_ptr->cellsign[i][j] == foe)  n++;
+            if (g_ptr->cellsign[i][j] == ally)  n_ally++;
+            if (g_ptr->cellsign[i][j] == foe)  n_foe++;
         }
         
-        if (n == 2) {
+        if (n_ally == 2) {
             for (int k = 0; k < 3; k++) {
-                if (g_ptr->cellsign[i][k] == 0)
-                {
+                if (g_ptr->cellsign[i][k] == 0) {
                     g_ptr->cellsign[i][k] = ally;
                     return 1;
                 }
             }
         }
-        n = 0;
+
+        if (n_foe == 2) {
+            for (int k = 0; k < 3; k++) {
+                if (g_ptr->cellsign[i][k] == 0) {
+                    g_ptr->cellsign[i][k] = ally;
+                    return 1;
+                }
+            }
+        }
+        n_foe = n_ally = 0;
     }
 
 //Check columns
        
     for (int j = 0; j < 3; j++) {
         for (int i = 0; i < 3; i++) {
-            if (g_ptr->cellsign[i][j] == foe)  n++;
+            if (g_ptr->cellsign[i][j] == foe)  n_foe++;
+            if (g_ptr->cellsign[i][j] == ally)  n_ally++;
         }
         
-        if (n == 2) {
+        if (n_ally == 2) {
             for (int k = 0; k < 3; k++) {
                 if (g_ptr->cellsign[k][j] == 0) {
                     g_ptr->cellsign[k][j] = ally;
@@ -362,16 +373,27 @@ int CompMove (struct Grid * g_ptr) {
                 
             }
         }
-        n = 0;
+
+        if (n_foe == 2) {
+            for (int k = 0; k < 3; k++) {
+                if (g_ptr->cellsign[k][j] == 0) {
+                    g_ptr->cellsign[k][j] = ally;
+                    return 1;
+                }
+                
+            }
+        }
+        n_ally = n_foe = 0;
     }
     
     //Check 1st diagonal
        
-    if (g_ptr->cellsign[0][0] == foe) n++;
-    if (g_ptr->cellsign[1][1] == foe) n++;
-    if (g_ptr->cellsign[2][2] == foe) n++;
-    
-    if (n == 2)  {
+    if (g_ptr->cellsign[0][0] == ally) n_ally++;
+    if (g_ptr->cellsign[1][1] == ally) n_ally++;
+    if (g_ptr->cellsign[2][2] == ally) n_ally++;
+
+
+    if (n_ally == 2)  {
         for (int k = 0; k < 3; k++) {
             if (g_ptr->cellsign[k][k] == 0) {
                 g_ptr->cellsign[k][k] = ally;
@@ -380,16 +402,46 @@ int CompMove (struct Grid * g_ptr) {
             
         }
     }
-    n = 0;
+
+    if (g_ptr->cellsign[0][0] == foe) n_foe++;
+    if (g_ptr->cellsign[1][1] == foe) n_foe++;
+    if (g_ptr->cellsign[2][2] == foe) n_foe++;
+    
+    
+
+    if (n_foe == 2)  {
+        for (int k = 0; k < 3; k++) {
+            if (g_ptr->cellsign[k][k] == 0) {
+                g_ptr->cellsign[k][k] = ally;
+                return 1;
+            }
+            
+        }
+    }
+    n_foe = n_ally = 0;
 
     
     //Check 2st diagonal
     
-    if (g_ptr->cellsign[0][2] == foe) n++;
-    if (g_ptr->cellsign[1][1] == foe) n++;
-    if (g_ptr->cellsign[2][0] == foe) n++;
+    if (g_ptr->cellsign[0][2] == ally) n_ally++;
+    if (g_ptr->cellsign[1][1] == ally) n_ally++;
+    if (g_ptr->cellsign[2][0] == ally) n_ally++;
+
+    if (n_ally == 2)  {
+        for (int k = 0; k < 3; k++) {
+            if (g_ptr->cellsign[k][2-k] == 0) {
+                g_ptr->cellsign[k][2-k] = ally;
+                return 1;
+            }
+            
+        }
+    }
     
-    if (n == 2) {
+    if (g_ptr->cellsign[0][2] == foe) n_foe++;
+    if (g_ptr->cellsign[1][1] == foe) n_foe++;
+    if (g_ptr->cellsign[2][0] == foe) n_foe++;
+    
+    if (n_foe == 2) {
         for (int k = 0; k < 3; k++) {
             if (g_ptr->cellsign[k][2-k] == 0) {
                 g_ptr->cellsign[k][2-k] = ally;
@@ -397,7 +449,7 @@ int CompMove (struct Grid * g_ptr) {
             }
         }
     }
-    n = 0;
+
 
     return 0;
 }    
