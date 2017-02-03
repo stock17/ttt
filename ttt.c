@@ -129,13 +129,15 @@ int main (void)
         
          // ----------- Check quit ----------------        
 
-        if (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT)
-                break;
-        }
+        //if (SDL_PollEvent(&e))
+        //{
+          
+        //}
         // ---------------------------------------
             SDL_WaitEvent(&e);
+            
+            if (e.type == SDL_QUIT)
+                break;
 
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
@@ -341,7 +343,7 @@ int CompMove (struct Grid * g_ptr) {
                 }
             }
         }
-        else n = 0;
+        n = 0;
     }
 
 //Check columns
@@ -360,7 +362,7 @@ int CompMove (struct Grid * g_ptr) {
                 
             }
         }
-        else n = 0;
+        n = 0;
     }
     
     //Check 1st diagonal
@@ -378,7 +380,7 @@ int CompMove (struct Grid * g_ptr) {
             
         }
     }
-    else n = 0;
+    n = 0;
 
     
     //Check 2st diagonal
@@ -390,12 +392,12 @@ int CompMove (struct Grid * g_ptr) {
     if (n == 2) {
         for (int k = 0; k < 3; k++) {
             if (g_ptr->cellsign[k][2-k] == 0) {
-                g_ptr->cellsign[2-k][k] = ally;
+                g_ptr->cellsign[k][2-k] = ally;
                 return 1;
             }
         }
     }
-    else n = 0;
+    n = 0;
 
     return 0;
 }    
