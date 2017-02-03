@@ -18,7 +18,7 @@ struct Grid {
 void DrawGrid (SDL_Renderer* r, struct Grid g);              // V.2
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
-int  CheckWin(struct Grid g);
+int  CheckWin(struct Grid g, int winner);
 
 
 
@@ -69,11 +69,11 @@ int main (void)
     while(1)
     {
        // Checking win
-        if (CheckWin (mygrid) == 1) {
+        if (CheckWin (mygrid, 1)) {
             printf("Cross win\n");
             break;
         }
-        else if (CheckWin (mygrid) == 2) {
+        else if (CheckWin (mygrid,2)) {
             printf("Zero win\n");
             break;
         }
@@ -199,101 +199,62 @@ void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
 
 
 // Function checks win 1
-int CheckWin(struct Grid g)
+int CheckWin(struct Grid g, int winner)
 {
-
-    int cross_win, zero_win;
-    cross_win = zero_win = 0;
+    int n = 0;
     
-
     //Check lines
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {
-            if (g.cellsign[i][j] == 1)
-                cross_win++;
-            else if (g.cellsign[i][j] == 2)
-                zero_win++;
+            if (g.cellsign[i][j] == winner)
+                n++;
         }
         
-        if (cross_win == 3)
+        if (n == 3)
             return 1;
-        else if (zero_win == 3)
-            return 2;
-        else cross_win = zero_win = 0;
+        else n = 0;
     }
     
-    
-    
-
     //Check columns
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {
-            if (g.cellsign[j][i] == 1)
-                cross_win++;
-            else if (g.cellsign[j][i] == 2)
-                zero_win++;
+            if (g.cellsign[j][i] == winner)
+                n++;
         }
 
-        if (cross_win == 3)
+        if (n == 3)
             return 1;
-        else if (zero_win == 3)
-            return 2;
-        else cross_win = zero_win = 0;
+        else n = 0;
     }
-    
-    
     
     //Check 1st diagonal
     
-    if (g.cellsign[0][0] == 1)
-        cross_win++;
-    else if (g.cellsign[0][0] == 2)
-        zero_win++;
+    if (g.cellsign[0][0] == winner) n++;
         
-    if (g.cellsign[1][1] == 1)
-        cross_win++;
-    else if (g.cellsign[1][1] == 2)
-        zero_win++;
+    if (g.cellsign[1][1] == winner) n++;
         
-    if (g.cellsign[2][2] == 1)
-        cross_win++;
-    else if (g.cellsign[2][2] == 2)
-        zero_win++;
+    if (g.cellsign[2][2] == winner) n++;
     
-    if (cross_win == 3)
+    if (n == 3)
         return 1;
-    else if (zero_win == 3)
-        return 2;
-    else cross_win = zero_win = 0;
+    else n = 0;
     
     //Check 2st diagonal
     
-    if (g.cellsign[0][2] == 1)
-        cross_win++;
-    else if (g.cellsign[0][2] == 2)
-        zero_win++;
+    if (g.cellsign[0][2] == winner) n++;
         
-    if (g.cellsign[1][1] == 1)
-        cross_win++;
-    else if (g.cellsign[1][1] == 2)
-        zero_win++;
+    if (g.cellsign[1][1] == winner) n++;
         
-    if (g.cellsign[2][0] == 1)
-        cross_win++;
-    else if (g.cellsign[2][0] == 2)
-        zero_win++;
+    if (g.cellsign[2][0] == winner) n++;
     
-    if (cross_win == 3)
+    if (n == 3)
         return 1;
-    else if (zero_win == 3)
-        return 2;
-    else cross_win = zero_win = 0;
     
-    return 0;
+    return 0; //no winner
 }
 //=============== end CheckWin ==================
 
