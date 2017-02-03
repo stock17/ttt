@@ -16,11 +16,11 @@ struct Grid {
     SDL_Point cellcenter[3][3];
 };
 
-// void DrawGrid (SDL_Renderer* r, int x, int y, int size);  // V.1
-void DrawGrid (SDL_Renderer* r, struct Grid g);              // V.2
+// void GRID_Draw (SDL_Renderer* r, int x, int y, int size);  // V.1
+void GRID_Draw (SDL_Renderer* r, struct Grid g);              // V.2
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
-int  CheckWin(struct Grid g, int winner);
+int  GRID_CheckWin(struct Grid g, int winner);
 
 
 
@@ -63,7 +63,7 @@ int main (void)
     }
 //===================================================
     
-    DrawGrid (rend, mygrid);
+    GRID_Draw (rend, mygrid);
     SDL_RenderPresent(rend);
     int player_move = 1;
     
@@ -74,11 +74,11 @@ int main (void)
     {
 
     // ---------- Checking win --------------
-        if (CheckWin (mygrid, 1)) {
+        if (GRID_CheckWin (mygrid, 1)) {
             printf("Cross win\n");
             break;
         }
-        else if (CheckWin (mygrid,2)) {
+        else if (GRID_CheckWin (mygrid,2)) {
             printf("Zero win\n");
             break;
         }
@@ -108,7 +108,7 @@ int main (void)
             mygrid.cellsign [i][j] = 2;
             
             SDL_RenderClear(rend);
-            DrawGrid(rend, mygrid);
+            GRID_Draw(rend, mygrid);
             SDL_RenderPresent(rend);
             
             player_move = 1;
@@ -145,7 +145,7 @@ int main (void)
                          
                         // Reload grid
                             SDL_RenderClear(rend);
-                            DrawGrid(rend, mygrid);
+                            GRID_Draw(rend, mygrid);
                             SDL_RenderPresent(rend);
                         // Give move to computer
                             player_move = 0; 
@@ -170,7 +170,7 @@ int main (void)
 
 // Function to draw the game grid V.2
 // Args: render, grid
-void DrawGrid (SDL_Renderer* r, struct Grid g)
+void GRID_Draw (SDL_Renderer* r, struct Grid g)
 {
     int x = g.center.x - g.cellsize * 1.5; // Get up left corner
     int y = g.center.y - g.cellsize * 1.5; //
@@ -224,7 +224,7 @@ void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
 
 
 // Function checks win
-int CheckWin(struct Grid g, int winner)
+int GRID_CheckWin(struct Grid g, int winner)
 {
     int n = 0;
     
@@ -272,7 +272,7 @@ int CheckWin(struct Grid g, int winner)
     
     return 0; //no winner
 }
-//=============== end CheckWin ==================
+//=============== end GRID_CheckWin ==================
 
 
 
