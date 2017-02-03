@@ -84,7 +84,7 @@ int main (void)
             printf("Zero win\n");
             break;
         }
-        if (GRID_CheckNoMove (mygrid)) {
+        else if (GRID_CheckNoMove (mygrid)) {
             printf("Draw!\n");
             break;
         }
@@ -120,21 +120,11 @@ int main (void)
         }
         
     // ------------ Player move ---------------
-        else 
-        
-        
-        
-        
-        {
-        
-         // ----------- Check quit ----------------        
+        else {                
 
-        //if (SDL_PollEvent(&e))
-        //{
-          
-        //}
-        // ---------------------------------------
             SDL_WaitEvent(&e);
+
+    // ----------- Check quit ---------------- 
             
             if (e.type == SDL_QUIT)
                 break;
@@ -301,9 +291,9 @@ int GRID_CheckNoMove(struct Grid g)
     int n = 0;
     
     //Check lines
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++) 
     {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 3; j++) 
         {
             if (g.cellsign[i][j] != 0)  n++;
         }
@@ -413,8 +403,7 @@ int CompMove (struct Grid * g_ptr) {
             if (g_ptr->cellsign[k][k] == 0) {
                 g_ptr->cellsign[k][k] = ally;
                 return 1;
-            }
-            
+            }            
         }
     }
 
@@ -429,8 +418,7 @@ int CompMove (struct Grid * g_ptr) {
             if (g_ptr->cellsign[k][k] == 0) {
                 g_ptr->cellsign[k][k] = ally;
                 return 1;
-            }
-            
+            }            
         }
     }
     n_foe = n_ally = 0;
@@ -447,8 +435,7 @@ int CompMove (struct Grid * g_ptr) {
             if (g_ptr->cellsign[k][2-k] == 0) {
                 g_ptr->cellsign[k][2-k] = ally;
                 return 1;
-            }
-            
+            }            
         }
     }
     
