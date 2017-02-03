@@ -323,17 +323,17 @@ int CompMove (struct Grid * g_ptr) {
 
 // 1. Check lines, columns and diagonal for 2 same signs
 
-// 1.1. Check lines
-
     int n_foe = 0;
     int n_ally = 0;
     int foe = 1;
     int ally = 2;
+
+// 1.1. Check lines
+
     
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (g_ptr->cellsign[i][j] == ally)  n_ally++;
-            if (g_ptr->cellsign[i][j] == foe)  n_foe++;
+            if (g_ptr->cellsign[i][j] == ally)  n_ally++;           
         }
         
         if (n_ally == 2) {
@@ -345,6 +345,14 @@ int CompMove (struct Grid * g_ptr) {
             }
         }
 
+        n_foe = n_ally = 0;
+    }
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (g_ptr->cellsign[i][j] == foe)  n_foe++;
+        }
+        
         if (n_foe == 2) {
             for (int k = 0; k < 3; k++) {
                 if (g_ptr->cellsign[i][k] == 0) {
@@ -359,8 +367,7 @@ int CompMove (struct Grid * g_ptr) {
 //Check columns
        
     for (int j = 0; j < 3; j++) {
-        for (int i = 0; i < 3; i++) {
-            if (g_ptr->cellsign[i][j] == foe)  n_foe++;
+        for (int i = 0; i < 3; i++) {            
             if (g_ptr->cellsign[i][j] == ally)  n_ally++;
         }
         
@@ -374,6 +381,14 @@ int CompMove (struct Grid * g_ptr) {
             }
         }
 
+        n_ally = n_foe = 0;
+    }
+    
+    for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            if (g_ptr->cellsign[i][j] == foe)  n_foe++;           
+        }            
+
         if (n_foe == 2) {
             for (int k = 0; k < 3; k++) {
                 if (g_ptr->cellsign[k][j] == 0) {
@@ -386,7 +401,7 @@ int CompMove (struct Grid * g_ptr) {
         n_ally = n_foe = 0;
     }
     
-    //Check 1st diagonal
+//Check 1st diagonal 
        
     if (g_ptr->cellsign[0][0] == ally) n_ally++;
     if (g_ptr->cellsign[1][1] == ally) n_ally++;
@@ -421,7 +436,7 @@ int CompMove (struct Grid * g_ptr) {
     n_foe = n_ally = 0;
 
     
-    //Check 2st diagonal
+//Check 2st diagonal
     
     if (g_ptr->cellsign[0][2] == ally) n_ally++;
     if (g_ptr->cellsign[1][1] == ally) n_ally++;
@@ -450,6 +465,33 @@ int CompMove (struct Grid * g_ptr) {
         }
     }
 
+// No 2 same signs in rows, lines and diagonals
+
+    // Check center cell
+    if (g_ptr->cellsign[1][1] == 0) { 
+        g_ptr->cellsign[1][1] = ally;
+        return 1;
+    }
+    
+    // Count bare cells
+    int barecell [9][2];
+    int n_barecell = 0;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (g_ptr->cellsign[i][j] == 0)  {
+                barecell[n_barecell][0] = i;
+                barecell[n_barecell][1] = j;
+                n_barecell++;;
+            }
+        }
+    }
+    // Set sign to random bare cell
+    srand(time(NULL));
+    int n = rand()%n_barecell;
+    g_ptr->cellsign[barecell [n] [0] ]  [ barecell [n] [1] ] = ally;
+    return 1;    
+    
 
     return 0;
 }    
