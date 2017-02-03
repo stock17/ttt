@@ -18,6 +18,7 @@ struct Grid {
 void DrawGrid (SDL_Renderer* r, struct Grid g);              // V.2
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
+int  CheckWin(struct Grid g);
 
 
 
@@ -34,7 +35,7 @@ int main (void)
     SDL_RenderClear(rend);
     SDL_RenderPresent(rend);
     
-    //=================== Init grid =====================
+//=================== Init grid =====================
     struct Grid mygrid;
 
     mygrid.center.x = RES_X / 2;
@@ -47,7 +48,7 @@ int main (void)
     {
         for (int j = 0; j < 3; j++)
         {    
-            // Move sings of cells to 0; cross - 1, zero - 2
+            // Set signs of cells to 0; cross - 1, zero - 2
             mygrid.cellsign[i][j] = 0; 
 
             // Set center coordinates of cells
@@ -58,36 +59,26 @@ int main (void)
         init_x = mygrid.center.x - mygrid.cellsize;
         init_y += mygrid.cellsize;
     }
-    //===================================================
-    
-
-    // Draw grid 
-    //DrawGrid (rend, (RES_X - 3 * GRIDSIZE) / 2, (RES_Y - 3 * GRIDSIZE) / 2, GRIDSIZE);
-    //V.2
-
-        // Testing...
-    mygrid.cellsign[0][0] = 1;    
-        mygrid.cellsign[1][1] = 2;
-            mygrid.cellsign[2][2] = 1;
-    
+//===================================================
     
     DrawGrid (rend, mygrid);
     SDL_RenderPresent(rend);
-    
-    
-    
-    /* Draw = testing 
-    DrawCircle(rend, 320, 240, 30); 
-    DrawCross(rend, 220, 240, 30);
-    SDL_RenderPresent(rend);
-    
-    DrawCross(rend, 420, 240, 30);
-    SDL_RenderPresent(rend);
-    ********************************/
-            
+//===================================================
+//================ Main loop  =======================
+//===================================================
     while(1)
     {
-       
+       // Checking win
+        if (CheckWin (mygrid) == 1) {
+            printf("Cross win\n");
+            break;
+        }
+        else if (CheckWin (mygrid) == 2) {
+            printf("Zero win\n");
+            break;
+        }
+        
+        
         if (SDL_PollEvent(&e))
         {
             if (e.type == SDL_QUIT)
@@ -100,7 +91,7 @@ int main (void)
             int mx, my;
             SDL_GetMouseState(&mx, &my);
            
-         // Check if mouse coordinates in any cell 
+        // Check if mouse coordinates in any cell 
                        
              for (int i = 0; i < 3; i++)
              {
@@ -111,6 +102,7 @@ int main (void)
                          (mx > mygrid.cellcenter[i][j].x - mygrid.cellsize/2 && my > mygrid.cellcenter[i][j].y- mygrid.cellsize/2) &&
                          (mx < mygrid.cellcenter[i][j].x + mygrid.cellsize/2 && my < mygrid.cellcenter[i][j].y + mygrid.cellsize/2)
                      )
+                     // then set sign
                      {
                          if (e.button.button == SDL_BUTTON_LEFT)
                              mygrid.cellsign[i][j] = 1;
@@ -204,3 +196,124 @@ void DrawCross (SDL_Renderer* r, int cx, int cy, int size)
       SDL_RenderDrawLine(r, cx-size, cy-size, cx+size, cy+size);
       SDL_RenderDrawLine(r, cx-size, cy+size, cx+size, cy-size);
 }
+
+
+// Function checks win 1
+int CheckWin(struct Grid g)
+{
+
+    int cross_win, zero_win;
+    cross_win = zero_win = 0;
+    
+
+    //Check lines
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (g.cellsign[i][j] == 1)
+                cross_win++;
+            else if (g.cellsign[i][j] == 2)
+                zero_win++;
+        }
+        
+        if (cross_win == 3)
+            return 1;
+        else if (zero_win == 3)
+            return 2;
+        else cross_win = zero_win = 0;
+    }
+    
+    
+    
+
+    //Check columns
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (g.cellsign[j][i] == 1)
+                cross_win++;
+            else if (g.cellsign[j][i] == 2)
+                zero_win++;
+        }
+
+        if (cross_win == 3)
+            return 1;
+        else if (zero_win == 3)
+            return 2;
+        else cross_win = zero_win = 0;
+    }
+    
+    
+    
+    //Check 1st diagonal
+    
+    if (g.cellsign[0][0] == 1)
+        cross_win++;
+    else if (g.cellsign[0][0] == 2)
+        zero_win++;
+        
+    if (g.cellsign[1][1] == 1)
+        cross_win++;
+    else if (g.cellsign[1][1] == 2)
+        zero_win++;
+        
+    if (g.cellsign[2][2] == 1)
+        cross_win++;
+    else if (g.cellsign[2][2] == 2)
+        zero_win++;
+    
+    if (cross_win == 3)
+        return 1;
+    else if (zero_win == 3)
+        return 2;
+    else cross_win = zero_win = 0;
+    
+    //Check 2st diagonal
+    
+    if (g.cellsign[0][2] == 1)
+        cross_win++;
+    else if (g.cellsign[0][2] == 2)
+        zero_win++;
+        
+    if (g.cellsign[1][1] == 1)
+        cross_win++;
+    else if (g.cellsign[1][1] == 2)
+        zero_win++;
+        
+    if (g.cellsign[2][0] == 1)
+        cross_win++;
+    else if (g.cellsign[2][0] == 2)
+        zero_win++;
+    
+    if (cross_win == 3)
+        return 1;
+    else if (zero_win == 3)
+        return 2;
+    else cross_win = zero_win = 0;
+    
+    return 0;
+}
+//=============== end CheckWin ==================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
