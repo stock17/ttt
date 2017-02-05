@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <math.h>
+
 
 #define GRIDSIZE 100
 #define RES_X 640
@@ -21,8 +23,10 @@ void GRID_Draw (SDL_Renderer* r, struct Grid g);              // V.2
 void DrawCircle (SDL_Renderer* r, int cx, int cy, int radius);
 void DrawCross (SDL_Renderer* r, int cx, int cy, int size);
 int  GRID_CheckWin(struct Grid g, int winner);
-int GRID_CheckNoMove(struct Grid g);
-int CompMove (struct Grid * g_ptr);
+int  GRID_CheckNoMove(struct Grid g);
+int  CompMove (struct Grid * g_ptr);
+
+void PlayerWin(SDL_Renderer * r);
 
 
 
@@ -31,13 +35,40 @@ int main (void)
     SDL_Window *win;
     SDL_Renderer *rend;
     SDL_Event e;
-    
+// ================== Init SDL =======================
     SDL_Init (SDL_INIT_VIDEO);
     win = SDL_CreateWindow("Tic-tac-toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RES_X, RES_Y, 0);
-    rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-    
+    rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);    
+
+// Clear screen    
     SDL_RenderClear(rend);
     SDL_RenderPresent(rend);
+        
+// ================= Init TTF =======================
+
+    TTF_Init();
+    if(TTF_Init()==-1) {
+    printf("TTF_Init: %s\n", TTF_GetError());
+    exit(2);
+}
+    TTF_Font * font = TTF_OpenFont("FreeSans.ttf", 20);
+    
+SDL_version compile_version;
+const SDL_version *link_version=TTF_Linked_Version();
+SDL_TTF_VERSION(&compile_version);
+printf("compiled with SDL_ttf version: %d.%d.%d\n", 
+        compile_version.major,
+        compile_version.minor,
+        compile_version.patch);
+printf("running with SDL_ttf version: %d.%d.%d\n", 
+        link_version->major,
+        link_version->minor,
+        link_version->patch);
+
+    if (!font) {
+        printf("Couldn't open font, error: %s\n", TTF_GetError());
+        printf("/usr/share/fonts/truetype/freefont/FreeSans.ttf\n");
+    }
     
 //=================== Init grid =====================
     struct Grid mygrid;
@@ -65,9 +96,12 @@ int main (void)
     }
 //===================================================
     
+    
+
     GRID_Draw (rend, mygrid);
     SDL_RenderPresent(rend);
-    int player_move = 1;
+    int player_move = 1;   
+    
     
 //===================================================
 //================ Main loop  =======================
@@ -77,7 +111,8 @@ int main (void)
 
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
-            printf("Cross win\n");
+            PlayerWin(rend);
+            //printf("Cross win\n");
             break;
         }
         else if (GRID_CheckWin (mygrid,2)) {
@@ -167,12 +202,13 @@ int main (void)
          }
         
     }
-        
+    TTF_Quit();
+            
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();
     
-}
+} //-------------- Main end --------------
 
 /****************************************
 *************** FUNCTIONS ***************
@@ -483,8 +519,19 @@ int CompMove (struct Grid * g_ptr) {
     return 0;
 }    
 
+//================ Player Win ======================
 
-
+void PlayerWin(SDL_Renderer * r)
+{
+    SDL_RenderClear(r);
+    
+    for (int i = 20; i < 40; i++)
+        DrawCircle(r, RES_X/2, RES_Y/2, i);
+    
+    SDL_RenderPresent(r);
+    SDL_Delay(3000);
+}
+//---------------------------------------------------
 
 
 
