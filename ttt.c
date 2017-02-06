@@ -26,7 +26,7 @@ int  GRID_CheckWin(struct Grid g, int winner);
 int  GRID_CheckNoMove(struct Grid g);
 int  CompMove (struct Grid * g_ptr);
 
-void PlayerWin(SDL_Renderer * r, TTF_Font * f);
+void ShowMessage(SDL_Renderer * r, TTF_Font * f, char * text);
 
 
 
@@ -101,30 +101,15 @@ int main (void)
 
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
-            //PlayerWin(rend, font);
-            //printf("Cross win\n");
-            SDL_Color text_color = {255, 255, 255};
-            //SDL_Surface * screen;
-            //screen = SDL_SetVideoMode(RES_X, RES_Y, 8, SDL_SWSURFACE);
-            SDL_Surface * text_surface;
-            text_surface = TTF_RenderText_Solid(font, "YOU WIN", text_color);
-            //SDL_BlitSurface(text_surface, NULL, screen, NULL);
-            //SDL_Flip(screen);
-            SDL_Texture * text_texture = SDL_CreateTextureFromSurface(rend, text_surface);
-            SDL_FreeSurface(text_surface);
-            SDL_RenderClear(rend);
-            SDL_Rect dst = {100,100,300,100};
-            SDL_RenderCopy(rend, text_texture, NULL, &dst);
-            SDL_RenderPresent(rend);
-            SDL_Delay(3000);
+            ShowMessage(rend, font, "YOU WIN!");
             break;
         }
         else if (GRID_CheckWin (mygrid,2)) {
-            printf("Zero win\n");
+            ShowMessage(rend, font, "YOU LOSE!");
             break;
         }
         else if (GRID_CheckNoMove (mygrid)) {
-            printf("Draw!\n");
+            ShowMessage(rend, font, "DRAW!");
             break;
         }
 
@@ -527,21 +512,23 @@ int CompMove (struct Grid * g_ptr) {
     return 0;
 }    
 
-//================ Player Win ======================
+//================ Show Message ======================
 
-void PlayerWin(SDL_Renderer * r, TTF_Font * f)
+void ShowMessage(SDL_Renderer * r, TTF_Font * f, char * text)
 {
-    /*SDL_RenderClear(r);
-    
-    for (int i = 20; i < 40; i++)
-        DrawCircle(r, RES_X/2, RES_Y/2, i);
-    
+   
+    SDL_Color text_color = {255, 255, 255};
+    SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
+    SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
+
+    SDL_RenderClear(r);
+    SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/4,RES_Y/4};
+    SDL_RenderCopy(r, text_texture, NULL, &dst);
     SDL_RenderPresent(r);
-    SDL_Delay(3000);*/
+    SDL_Delay(3000);
     
-    //char * win_text = "YOU WIN";
-    
-    
+    SDL_FreeSurface(text_surface);    
+    SDL_DestroyTexture(text_texture);
 }
 //---------------------------------------------------
 
