@@ -34,10 +34,8 @@ int main (void)
 {
     SDL_Window *win;
     SDL_Renderer *rend;
-    SDL_Event e;
-    
-    //SDL_Surface * text_surface;
-    
+    SDL_Event e;    
+       
 // ================== Init SDL =======================
     SDL_Init (SDL_INIT_VIDEO);
     win = SDL_CreateWindow("Tic-tac-toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RES_X, RES_Y, 0);
@@ -113,33 +111,19 @@ int main (void)
             break;
         }
 
-   
-        
-    // ----------- Computer move --------------
+     // ----------- Computer move --------------
    
         if (!player_move)
         {
-            if (CompMove(&mygrid)) {}
-            else {
+            if (CompMove(&mygrid)) {
             
-                int n, i, j;
-        //<<<<<<<<<-------Random for testing...------->>>>>>>>
-                do {
-                    srand(time(NULL));
-                    n = rand()%9;
-                    j = n % 3;
-                    i = n / 3;
-                
-                } while (mygrid.cellsign[i][j] != 0);
+                SDL_RenderClear(rend);
+                GRID_Draw(rend, mygrid);
+                SDL_RenderPresent(rend);
             
-                mygrid.cellsign [i][j] = 2;
+                player_move = 1;
+            
             }
-            
-            SDL_RenderClear(rend);
-            GRID_Draw(rend, mygrid);
-            SDL_RenderPresent(rend);
-            
-            player_move = 1;
                     
         }
         
@@ -164,23 +148,21 @@ int main (void)
                 {
                     for (int j = 0; j < 3; j++)
                     {    
-                        if 
+                        if // mouse touches some cell, and cell hasn't sign
                          (
                              (mx > mygrid.cellcenter[i][j].x - mygrid.cellsize/2 && my > mygrid.cellcenter[i][j].y - mygrid.cellsize/2) &&
                              (mx < mygrid.cellcenter[i][j].x + mygrid.cellsize/2 && my < mygrid.cellcenter[i][j].y + mygrid.cellsize/2) &&
                              (mygrid.cellsign[i][j] == 0)
                          )
                          // then set sign
-                         {
-                            // if (e.button.button == SDL_BUTTON_LEFT)
-                               mygrid.cellsign[i][j] = 1;
-                            // else
-                            // mygrid.cellsign[i][j] = 2;
+                         {                           
+                            mygrid.cellsign[i][j] = 1;                            
                          
-                        // Reload grid
+                        // Reload grid                        
                             SDL_RenderClear(rend);
                             GRID_Draw(rend, mygrid);
                             SDL_RenderPresent(rend);
+                        
                         // Give move to computer
                             player_move = 0; 
 
@@ -317,20 +299,19 @@ int GRID_CheckWin(struct Grid g, int winner)
 // Function checks moves
 int GRID_CheckNoMove(struct Grid g)
 {
-    int n = 0;
+    //Check the grid to free cells
     
-    //Check lines
     for (int i = 0; i < 3; i++) 
     {
         for (int j = 0; j < 3; j++) 
         {
-            if (g.cellsign[i][j] != 0)  n++;
+            if (g.cellsign[i][j] == 0)  
+                return 0;
         }
         
-        if (n == 9) return 1;
     }
 
-    return 0;
+    return 1;
 }
 
 
@@ -383,7 +364,7 @@ int CompMove (struct Grid * g_ptr) {
         n_foe = n_ally = 0;
     }
 
-//Check columns
+// 1.2. Check columns
        
     for (int j = 0; j < 3; j++) {
         for (int i = 0; i < 3; i++) {            
@@ -420,7 +401,7 @@ int CompMove (struct Grid * g_ptr) {
         n_ally = n_foe = 0;
     }
     
-//Check 1st diagonal 
+// 1.3. Check 1st diagonal 
        
     if (g_ptr->cellsign[0][0] == ally) n_ally++;
     if (g_ptr->cellsign[1][1] == ally) n_ally++;
@@ -453,7 +434,7 @@ int CompMove (struct Grid * g_ptr) {
     n_foe = n_ally = 0;
 
     
-//Check 2st diagonal
+// 1.4. Check 2st diagonal
     
     if (g_ptr->cellsign[0][2] == ally) n_ally++;
     if (g_ptr->cellsign[1][1] == ally) n_ally++;
@@ -481,15 +462,15 @@ int CompMove (struct Grid * g_ptr) {
         }
     }
 
-// No 2 same signs in rows, lines and diagonals
+// 2. No 2 same signs in rows, lines and diagonals
 
-    // Check center cell
+    // 2.1. Check center cell
     if (g_ptr->cellsign[1][1] == 0) { 
         g_ptr->cellsign[1][1] = ally;
         return 1;
     }
     
-    // Count bare cells
+    // 2.2. Count bare cells
     int barecell [9][2];
     int n_barecell = 0;
     
@@ -502,7 +483,7 @@ int CompMove (struct Grid * g_ptr) {
             }
         }
     }
-    // Set sign to random bare cell
+    // 2.3. Set sign to random bare cell
     srand(time(NULL));
     int n = rand()%n_barecell;
     g_ptr->cellsign[barecell [n] [0] ]  [ barecell [n] [1] ] = ally;
