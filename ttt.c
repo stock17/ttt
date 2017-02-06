@@ -26,7 +26,7 @@ int  GRID_CheckWin(struct Grid g, int winner);
 int  GRID_CheckNoMove(struct Grid g);
 int  CompMove (struct Grid * g_ptr);
 
-void PlayerWin(SDL_Renderer * r);
+void PlayerWin(SDL_Renderer * r, TTF_Font * f);
 
 
 
@@ -35,6 +35,9 @@ int main (void)
     SDL_Window *win;
     SDL_Renderer *rend;
     SDL_Event e;
+    
+    //SDL_Surface * text_surface;
+    
 // ================== Init SDL =======================
     SDL_Init (SDL_INIT_VIDEO);
     win = SDL_CreateWindow("Tic-tac-toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RES_X, RES_Y, 0);
@@ -48,26 +51,13 @@ int main (void)
 
     TTF_Init();
     if(TTF_Init()==-1) {
-    printf("TTF_Init: %s\n", TTF_GetError());
-    exit(2);
-}
+       printf("TTF_Init: %s\n", TTF_GetError());
+       exit(2);
+    }
     TTF_Font * font = TTF_OpenFont("FreeSans.ttf", 20);
-    
-SDL_version compile_version;
-const SDL_version *link_version=TTF_Linked_Version();
-SDL_TTF_VERSION(&compile_version);
-printf("compiled with SDL_ttf version: %d.%d.%d\n", 
-        compile_version.major,
-        compile_version.minor,
-        compile_version.patch);
-printf("running with SDL_ttf version: %d.%d.%d\n", 
-        link_version->major,
-        link_version->minor,
-        link_version->patch);
 
     if (!font) {
         printf("Couldn't open font, error: %s\n", TTF_GetError());
-        printf("/usr/share/fonts/truetype/freefont/FreeSans.ttf\n");
     }
     
 //=================== Init grid =====================
@@ -111,8 +101,22 @@ printf("running with SDL_ttf version: %d.%d.%d\n",
 
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
-            PlayerWin(rend);
+            //PlayerWin(rend, font);
             //printf("Cross win\n");
+            SDL_Color text_color = {255, 255, 255};
+            //SDL_Surface * screen;
+            //screen = SDL_SetVideoMode(RES_X, RES_Y, 8, SDL_SWSURFACE);
+            SDL_Surface * text_surface;
+            text_surface = TTF_RenderText_Solid(font, "YOU WIN", text_color);
+            //SDL_BlitSurface(text_surface, NULL, screen, NULL);
+            //SDL_Flip(screen);
+            SDL_Texture * text_texture = SDL_CreateTextureFromSurface(rend, text_surface);
+            SDL_FreeSurface(text_surface);
+            SDL_RenderClear(rend);
+            SDL_Rect dst = {100,100,300,100};
+            SDL_RenderCopy(rend, text_texture, NULL, &dst);
+            SDL_RenderPresent(rend);
+            SDL_Delay(3000);
             break;
         }
         else if (GRID_CheckWin (mygrid,2)) {
@@ -202,6 +206,7 @@ printf("running with SDL_ttf version: %d.%d.%d\n",
          }
         
     }
+    TTF_CloseFont(font);
     TTF_Quit();
             
     SDL_DestroyRenderer(rend);
@@ -209,6 +214,9 @@ printf("running with SDL_ttf version: %d.%d.%d\n",
     SDL_Quit();
     
 } //-------------- Main end --------------
+
+
+
 
 /****************************************
 *************** FUNCTIONS ***************
@@ -521,15 +529,19 @@ int CompMove (struct Grid * g_ptr) {
 
 //================ Player Win ======================
 
-void PlayerWin(SDL_Renderer * r)
+void PlayerWin(SDL_Renderer * r, TTF_Font * f)
 {
-    SDL_RenderClear(r);
+    /*SDL_RenderClear(r);
     
     for (int i = 20; i < 40; i++)
         DrawCircle(r, RES_X/2, RES_Y/2, i);
     
     SDL_RenderPresent(r);
-    SDL_Delay(3000);
+    SDL_Delay(3000);*/
+    
+    //char * win_text = "YOU WIN";
+    
+    
 }
 //---------------------------------------------------
 
