@@ -544,7 +544,7 @@ int ContinueGame (SDL_Renderer * r, struct Grid * g)
 {
     SDL_Event e1;     
     
-    char *text = "Do you want to play once again? Y/N";
+    char *text = "Do you want to play once again? Y/N (LMB/RMB)";
     TTF_Font * f = TTF_OpenFont("FreeSans.ttf", RES_X/32);
     SDL_Color fg = {255, 255, 255};
     SDL_Color bg = {0, 0, 0};
@@ -572,25 +572,25 @@ int ContinueGame (SDL_Renderer * r, struct Grid * g)
         }
         
 
-        if (e1.type == SDL_KEYDOWN)
+        if ( (e1.type == SDL_KEYDOWN && e1.key.keysym.sym == SDL_GetKeyFromName("Y")) ||
+             (e1.type == SDL_MOUSEBUTTONDOWN && e1.button.button == SDL_BUTTON_LEFT) )
+        
         {
-            if (e1.key.keysym.sym == SDL_GetKeyFromName("Y"))
-            {
+            SDL_SetRenderDrawColor(r,0,0,0,0);                
+            SDL_RenderClear(r);
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    g->cellsign[i][j] = 0;                 
 
-                SDL_SetRenderDrawColor(r,0,0,0,0);                
-                SDL_RenderClear(r);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        g->cellsign[i][j] = 0;                 
-
-                GRID_Draw(r, *g);                
-                SDL_RenderPresent(r);
-                return 1; 
-            }
-
-            else if (e1.key.keysym.sym == SDL_GetKeyFromName("N"))
-                return 0;
+            GRID_Draw(r, *g);                
+            SDL_RenderPresent(r);
+            return 1; 
         }
+
+        else if ( (e1.type == SDL_KEYDOWN && e1.key.keysym.sym == SDL_GetKeyFromName("N")) ||
+             (e1.type == SDL_MOUSEBUTTONDOWN && e1.button.button == SDL_BUTTON_RIGHT) )
+                return 0;
+        
     }        
 }
 
