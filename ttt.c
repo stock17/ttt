@@ -27,7 +27,7 @@ int  GRID_CheckNoMove(struct Grid g);
 int  CompMove (struct Grid * g_ptr);
 
 void ShowMessage(SDL_Renderer * r, char * text);
-int ContinueGame (SDL_Renderer * r);
+int ContinueGame (SDL_Renderer * r, struct Grid * g);
 
 
 
@@ -43,6 +43,7 @@ int main (void)
     rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);    
 
       // Clear screen    
+    SDL_SetRenderDrawColor(rend,0,0,0,255);  
     SDL_RenderClear(rend);
     SDL_RenderPresent(rend);
         
@@ -96,48 +97,18 @@ int main (void)
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
             ShowMessage(rend, "YOU WIN!");
-            if (!ContinueGame(rend))
+            if (!ContinueGame(rend, &mygrid))
                 break;
-            else
-            {
-                SDL_RenderClear(rend);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        mygrid.cellsign[i][j] = 0;                 
-                SDL_SetRenderDrawColor(rend,255,255,255,255);                
-                GRID_Draw(rend, mygrid);                
-                SDL_RenderPresent(rend);
-            }
         }    
         else if (GRID_CheckWin (mygrid,2)) {
             ShowMessage(rend, "YOU LOSE!");
-            if (!ContinueGame(rend))
-                break;
-            else
-            {
-                SDL_RenderClear(rend);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        mygrid.cellsign[i][j] = 0;                 
-                SDL_SetRenderDrawColor(rend,255,255,255,255);                
-                GRID_Draw(rend, mygrid);                
-                SDL_RenderPresent(rend);
-            }
+            if (!ContinueGame(rend, &mygrid))
+                break;            
         }
         else if (GRID_CheckNoMove (mygrid)) {
             ShowMessage(rend, "DRAW!");
-            if (!ContinueGame(rend))
+            if (!ContinueGame(rend, &mygrid))
                 break;
-            else
-            {
-                SDL_RenderClear(rend);
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                        mygrid.cellsign[i][j] = 0;                 
-                SDL_SetRenderDrawColor(rend,255,255,255,255);                
-                GRID_Draw(rend, mygrid);                
-                SDL_RenderPresent(rend);
-            }
         }
 
      // ----------- Computer move --------------
@@ -146,6 +117,7 @@ int main (void)
         {
             if (CompMove(&mygrid)) {
             
+                SDL_SetRenderDrawColor(rend,0,0,0,0);
                 SDL_RenderClear(rend);
                 GRID_Draw(rend, mygrid);
                 SDL_RenderPresent(rend);
@@ -188,6 +160,7 @@ int main (void)
                             mygrid.cellsign[i][j] = 1;                            
                          
                         // Reload grid                        
+                            SDL_SetRenderDrawColor(rend,0,0,0,0);
                             SDL_RenderClear(rend);
                             GRID_Draw(rend, mygrid);
                             SDL_RenderPresent(rend);
@@ -227,6 +200,7 @@ void GRID_Draw (SDL_Renderer* r, struct Grid g)
     int step = g.cellsize;
    
     // Draw grid...
+    SDL_SetRenderDrawColor(r,255,255,255,255);
     for (int i = 0; i < 4 * step; i += step)      // with border
     //for (int i = step; i < 3 * step; i += step) // without border
     {
@@ -532,6 +506,7 @@ void ShowMessage(SDL_Renderer * r, char * text)
     SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
     SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
 
+    SDL_SetRenderDrawColor(r,0,0,0,255);
     SDL_RenderClear(r);
     SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/4,RES_Y/4};
     SDL_RenderCopy(r, text_texture, NULL, &dst);
@@ -544,7 +519,7 @@ void ShowMessage(SDL_Renderer * r, char * text)
 }
 // ================= Continue ========================
 
-int ContinueGame (SDL_Renderer * r)
+int ContinueGame (SDL_Renderer * r, struct Grid * g)
 
 {
     SDL_Event e1;     
@@ -555,7 +530,7 @@ int ContinueGame (SDL_Renderer * r)
     SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
     SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
 
-
+    SDL_SetRenderDrawColor(r,0,0,0,255);
     SDL_RenderClear(r);
     SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/2,RES_Y/8};
     SDL_RenderCopy(r, text_texture, NULL, &dst);
@@ -579,7 +554,19 @@ int ContinueGame (SDL_Renderer * r)
         if (e1.type == SDL_KEYDOWN)
         {
             if (e1.key.keysym.sym == SDL_GetKeyFromName("Y"))
-                return 1;
+            {
+
+                SDL_SetRenderDrawColor(r,0,0,0,0);                
+                SDL_RenderClear(r);
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        g->cellsign[i][j] = 0;                 
+
+                GRID_Draw(r, *g);                
+                SDL_RenderPresent(r);
+                return 1; 
+            }
+
             else if (e1.key.keysym.sym == SDL_GetKeyFromName("N"))
                 return 0;
         }
