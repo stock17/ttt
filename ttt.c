@@ -201,6 +201,7 @@ void GRID_Draw (SDL_Renderer* r, struct Grid g)
    
     // Draw grid...
     SDL_SetRenderDrawColor(r,255,255,255,255);
+    
     for (int i = 0; i < 4 * step; i += step)      // with border
     //for (int i = step; i < 3 * step; i += step) // without border
     {
@@ -208,18 +209,32 @@ void GRID_Draw (SDL_Renderer* r, struct Grid g)
         SDL_RenderDrawLine(r, x+i, y, x+i, y+3*step);           
     }
     
+    //Double border
+    SDL_Rect db = {x - g.cellsize / 5, y - g.cellsize / 5, g.cellsize * 3 + 2 * g.cellsize / 5, g.cellsize * 3 + 2 * g.cellsize / 5};
+    SDL_RenderDrawRect(r, &db);
+    
+    
     
     //Draw signs
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {    
-            if (g.cellsign[i][j] == 1)
-                DrawCross(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
-            else if (g.cellsign[i][j] == 2)
-                DrawCircle(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
-           
+            SDL_SetRenderDrawColor(r,255,255,255,255);        
             SDL_RenderDrawPoint(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y);
+
+            if (g.cellsign[i][j] == 1)
+            {
+                SDL_SetRenderDrawColor(r,255,0,0,255);
+                DrawCross(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
+            }
+            else if (g.cellsign[i][j] == 2)
+            {
+                SDL_SetRenderDrawColor(r,0,255,0,255);
+                DrawCircle(r, g.cellcenter[i][j].x, g.cellcenter[i][j].y, g.cellsize / 3);
+            }
+           
+
         }
 
     }
@@ -500,7 +515,7 @@ int CompMove (struct Grid * g_ptr) {
 
 void ShowMessage(SDL_Renderer * r, char * text)
 {
-    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", 20);
+    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", 40);
 
     SDL_Color text_color = {255, 255, 255};
     SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
@@ -525,14 +540,15 @@ int ContinueGame (SDL_Renderer * r, struct Grid * g)
     SDL_Event e1;     
     
     char *text = "Do you want to play once again? Y/N";
-    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", 12);
-    SDL_Color text_color = {255, 255, 255};
-    SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
+    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", RES_X/32);
+    SDL_Color fg = {255, 255, 255};
+    SDL_Color bg = {0, 0, 0};
+    SDL_Surface * text_surface = TTF_RenderText_Shaded(f, text, fg, bg);
     SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
 
     SDL_SetRenderDrawColor(r,0,0,0,255);
     SDL_RenderClear(r);
-    SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/2,RES_Y/8};
+    SDL_Rect dst = {RES_X/4,RES_Y/8*3,RES_X/2,RES_Y/16};
     SDL_RenderCopy(r, text_texture, NULL, &dst);
     SDL_RenderPresent(r);
     
