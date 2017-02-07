@@ -93,19 +93,22 @@ int main (void)
 //===================================================
     while(1)
     {
-
+        
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
-            ShowMessage(rend, "YOU WIN!");
+            SDL_Delay(1000);
+            ShowMessage(rend, "YOU WIN!");            
             if (!ContinueGame(rend, &mygrid))
                 break;
         }    
         else if (GRID_CheckWin (mygrid,2)) {
+            SDL_Delay(1000);
             ShowMessage(rend, "YOU LOSE!");
             if (!ContinueGame(rend, &mygrid))
                 break;            
         }
         else if (GRID_CheckNoMove (mygrid)) {
+            SDL_Delay(1000);
             ShowMessage(rend, "DRAW!");
             if (!ContinueGame(rend, &mygrid))
                 break;
@@ -117,13 +120,15 @@ int main (void)
         {
             if (CompMove(&mygrid)) {
             
+                SDL_Delay(1000);
+            
                 SDL_SetRenderDrawColor(rend,0,0,0,0);
                 SDL_RenderClear(rend);
                 GRID_Draw(rend, mygrid);
                 SDL_RenderPresent(rend);
             
-                player_move = 1;
-            
+                player_move = 1;                
+                           
             }
                     
         }
@@ -526,7 +531,7 @@ void ShowMessage(SDL_Renderer * r, char * text)
     SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/4,RES_Y/4};
     SDL_RenderCopy(r, text_texture, NULL, &dst);
     SDL_RenderPresent(r);
-    SDL_Delay(3000);
+    SDL_Delay(2000);
     
     SDL_FreeSurface(text_surface);    
     SDL_DestroyTexture(text_texture);
