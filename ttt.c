@@ -26,7 +26,8 @@ int  GRID_CheckWin(struct Grid g, int winner);
 int  GRID_CheckNoMove(struct Grid g);
 int  CompMove (struct Grid * g_ptr);
 
-void ShowMessage(SDL_Renderer * r, TTF_Font * f, char * text);
+void ShowMessage(SDL_Renderer * r, char * text);
+int ContinueGame (SDL_Renderer * r);
 
 
 
@@ -41,7 +42,7 @@ int main (void)
     win = SDL_CreateWindow("Tic-tac-toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RES_X, RES_Y, 0);
     rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);    
 
-// Clear screen    
+      // Clear screen    
     SDL_RenderClear(rend);
     SDL_RenderPresent(rend);
         
@@ -52,12 +53,7 @@ int main (void)
        printf("TTF_Init: %s\n", TTF_GetError());
        exit(2);
     }
-    TTF_Font * font = TTF_OpenFont("FreeSans.ttf", 20);
-
-    if (!font) {
-        printf("Couldn't open font, error: %s\n", TTF_GetError());
-    }
-    
+   
 //=================== Init grid =====================
     struct Grid mygrid;
 
@@ -99,16 +95,49 @@ int main (void)
 
     // ---------- Checking win --------------
         if (GRID_CheckWin (mygrid, 1)) {
-            ShowMessage(rend, font, "YOU WIN!");
-            break;
-        }
+            ShowMessage(rend, "YOU WIN!");
+            if (!ContinueGame(rend))
+                break;
+            else
+            {
+                SDL_RenderClear(rend);
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        mygrid.cellsign[i][j] = 0;                 
+                SDL_SetRenderDrawColor(rend,255,255,255,255);                
+                GRID_Draw(rend, mygrid);                
+                SDL_RenderPresent(rend);
+            }
+        }    
         else if (GRID_CheckWin (mygrid,2)) {
-            ShowMessage(rend, font, "YOU LOSE!");
-            break;
+            ShowMessage(rend, "YOU LOSE!");
+            if (!ContinueGame(rend))
+                break;
+            else
+            {
+                SDL_RenderClear(rend);
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        mygrid.cellsign[i][j] = 0;                 
+                SDL_SetRenderDrawColor(rend,255,255,255,255);                
+                GRID_Draw(rend, mygrid);                
+                SDL_RenderPresent(rend);
+            }
         }
         else if (GRID_CheckNoMove (mygrid)) {
-            ShowMessage(rend, font, "DRAW!");
-            break;
+            ShowMessage(rend, "DRAW!");
+            if (!ContinueGame(rend))
+                break;
+            else
+            {
+                SDL_RenderClear(rend);
+                for (int i = 0; i < 3; i++)
+                    for (int j = 0; j < 3; j++)
+                        mygrid.cellsign[i][j] = 0;                 
+                SDL_SetRenderDrawColor(rend,255,255,255,255);                
+                GRID_Draw(rend, mygrid);                
+                SDL_RenderPresent(rend);
+            }
         }
 
      // ----------- Computer move --------------
@@ -173,7 +202,7 @@ int main (void)
          }
         
     }
-    TTF_CloseFont(font);
+
     TTF_Quit();
             
     SDL_DestroyRenderer(rend);
@@ -495,9 +524,10 @@ int CompMove (struct Grid * g_ptr) {
 
 //================ Show Message ======================
 
-void ShowMessage(SDL_Renderer * r, TTF_Font * f, char * text)
+void ShowMessage(SDL_Renderer * r, char * text)
 {
-   
+    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", 20);
+
     SDL_Color text_color = {255, 255, 255};
     SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
     SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
@@ -510,9 +540,51 @@ void ShowMessage(SDL_Renderer * r, TTF_Font * f, char * text)
     
     SDL_FreeSurface(text_surface);    
     SDL_DestroyTexture(text_texture);
+    TTF_CloseFont(f);
 }
-//---------------------------------------------------
+// ================= Continue ========================
 
+int ContinueGame (SDL_Renderer * r)
+
+{
+    SDL_Event e1;     
+    
+    char *text = "Do you want to play once again? Y/N";
+    TTF_Font * f = TTF_OpenFont("FreeSans.ttf", 12);
+    SDL_Color text_color = {255, 255, 255};
+    SDL_Surface * text_surface = TTF_RenderText_Solid(f, text, text_color);
+    SDL_Texture * text_texture = SDL_CreateTextureFromSurface(r, text_surface);
+
+
+    SDL_RenderClear(r);
+    SDL_Rect dst = {RES_X/8*3,RES_Y/8*3,RES_X/2,RES_Y/8};
+    SDL_RenderCopy(r, text_texture, NULL, &dst);
+    SDL_RenderPresent(r);
+    
+    SDL_FreeSurface(text_surface);
+    SDL_DestroyTexture(text_texture);  
+    TTF_CloseFont(f);  
+ 
+    
+    while (1)
+    {
+        SDL_WaitEvent(&e1);
+
+        if (e1.type == SDL_QUIT)
+        {
+            return 0;
+        }
+        
+
+        if (e1.type == SDL_KEYDOWN)
+        {
+            if (e1.key.keysym.sym == SDL_GetKeyFromName("Y"))
+                return 1;
+            else if (e1.key.keysym.sym == SDL_GetKeyFromName("N"))
+                return 0;
+        }
+    }        
+}
 
 
 
