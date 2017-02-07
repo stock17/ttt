@@ -174,11 +174,10 @@ int main (void)
                             player_move = 0; 
 
                         }
-                     }                            
-                 }
-              }
-         }
-        
+                    }                            
+                }
+            }
+        }        
     }
 
     TTF_Quit();
